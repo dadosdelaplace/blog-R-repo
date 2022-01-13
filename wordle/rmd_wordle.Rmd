@@ -1439,7 +1439,7 @@ Empecemos por el peor de los casos: la **palabra a adivinar puede ser cualquiera
 ```{r simulacion-1}
 # * 6 intentos y 5 letras
 # * con palabra inicial y clave equiprobables
-simulaciones <- 50
+simulaciones <- 25
 generar_equi <- TRUE
 iniciar_equi <- FALSE
 simulacion_CREA <-
@@ -1547,7 +1547,7 @@ El mejor de los casos será aquel en el que el conjunto de palabras que el usuar
 
 ```{r simulacion-2}
 # solo las candidatas a wordle
-simulaciones <- 50
+simulaciones <- 25
 generar_equi <- TRUE
 iniciar_equi <- FALSE
 simulacion_WORDLE <-
@@ -1652,7 +1652,7 @@ Por último el **caso más realista**: el conjunto de palabras que el usuario po
 
 ```{r simulacion-3}
 # adivinando wordle pero con corpus
-simulaciones <- 50
+simulaciones <- 25
 generar_equi <- TRUE
 iniciar_equi <- FALSE
 simulacion_mixta <-
@@ -1765,54 +1765,12 @@ ggplot(df_mixta %>% mutate(fallo = (intentos == "FALLO"))) +
 
 &nsbp;
 
-**IMPORTANTE**: los resultados de elegir una palabra aleatoria tienen truco, ya que no es totalmente aleatorio, sino que estamos cribando palabras en función de los resultados de la iteración anterior. Si la palabra fuese totalmente aleatorio, sin atender a los resultados de los cuadrados, el resultado sería bastante desastrosos, pero asumimos que en el peor de los casos, la estrategia mínima de un usuario será, al menos, cuadrar una palabra en función de sus cuadrados anteriores. Aquí un ejemplo de algo totalmente aleatorio.
+Las **palabras a adivinar en los casos en los que no se puedo completar** en 6 menos eran
+
+`r if (length(palabras_fallo) == 0) { "ninguna" } else { palabras_fallo })`
 
 
-<details>
-  <summary>📝<strong>Código</strong></summary>
-
-```{r simulacion-4}
-# adivinando wordle pero con corpus
-simulaciones <- 50
-generar_equi <- TRUE
-iniciar_equi <- FALSE
-simulacion_mixta <-
-  simulacion_wordle(datos_CREA_filtrado %>%
-                     filter(nletras == 5),
-                    puntuacion_letras_5,
-                    palabras_candidatas = datos_palabras_wordle,
-                    simulaciones = simulaciones,
-                    generar_equi = generar_equi,
-                    iniciar_equi = iniciar_equi)
-intentos_mixta <- unlist(simulacion_mixta$resultados["intentos", ])
-distrib_intentos_mixta <-
-  100 * table(intentos_mixta) / simulaciones
-media_intentos_mixta <- mean(intentos_mixta)
-distrib_intentos_mixta
-media_intentos_mixta
-
-# Dummy (palabra aleatoria entre candidatas)
-generar_equi <- TRUE
-iniciar_equi <- TRUE
-simulacion_muy_dummy_mixta <-
-  simulacion_wordle(datos_CREA_filtrado %>%
-                     filter(nletras == 5),
-                    puntuacion_letras_5,
-                    palabras_candidatas = datos_palabras_wordle,
-                    simulaciones = simulaciones,
-                    generar_equi = generar_equi,
-                    iniciar_equi = iniciar_equi,
-                    dummy_random = TRUE,
-                    extremely_dummmy = TRUE)
-intentos_muy_dummy_mixta <-
-  unlist(simulacion_muy_dummy_mixta$resultados["intentos", ])
-distrib_intentos_muy_dummy_mixta <-
-  100 * table(intentos_muy_dummy_mixta) / simulaciones
-media_intentos_muy_dummy_mixta <- mean(intentos_muy_dummy_mixta)
-distrib_intentos_muy_dummy_mixta
-media_intentos_muy_dummy_mixta
-```
-</details>
+**IMPORTANTE**: los resultados de elegir una palabra aleatoria tienen truco, ya que no es totalmente aleatorio, sino que estamos cribando palabras en función de los resultados de la iteración anterior. Si la palabra fuese totalmente aleatorio, sin atender a los resultados de los cuadrados, el resultado sería bastante desastrosos, pero asumimos que en el peor de los casos, la estrategia mínima de un usuario será, al menos, cuadrar una palabra en función de sus cuadrados anteriores. 
 
 
 ```{r tabla-4, echo = FALSE}
@@ -1913,7 +1871,9 @@ datatable(df, rownames = FALSE, caption = caption_tabla,
   formatPercentage(c("fallos"), digits = 3)
 ```
 
-Las palabras con mejor «rendimiento» han sido `r df %>% arrange(media) %>% slice_head(n = 5) %>% pull(palabra)`.
+Las palabras con mejor «rendimiento» han sido
+
+`r df %>% arrange(media) %>% slice_head(n = 7) %>% pull(palabra)`.
 
 # Jugar a WORDLE
 
