@@ -279,7 +279,7 @@ datatable(datos_CREA_filtrado %>%
                        "nº letras"),
           caption = "Palabras más repetidas en CREA",
           options = list(pageLength = 25))  %>%
-  formatRound(c("log_frec_abs"), digits = 3)
+  formatRound(c("frec_relativa", "log_frec_abs", "log_frec_rel"), digits = 3)
 
 datatable(datos_CREA_filtrado %>%
             arrange(frec_abs) %>%
@@ -294,7 +294,7 @@ datatable(datos_CREA_filtrado %>%
                        "nº letras"),
           caption = "Palabras menos repetidas en CREA (de las que aparecen en más de 1 de cada 1000 documentos)",
           options = list(pageLength = 15)) %>%
-  formatRound(c("log_frec_abs"), digits = 3)
+  formatRound(c("frec_relativa", "log_frec_abs", "log_frec_rel"), digits = 3)
 ```
 
 Entre todas esas palabras que hemos obtenido quizás sea también relevante **analizar la distribución de las letras**: ¿de qué número de letras son las palabras más repetidas en castellano (según el corpus de la RAE)?
@@ -1913,6 +1913,7 @@ datatable(df, rownames = FALSE, caption = caption_tabla,
   formatPercentage(c("fallos"), digits = 3)
 ```
 
+Las palabras con mejor «rendimiento» han sido `r df %>% arrange(media) %>% slice_head(n = 5) %>% pull(palabra)`.
 
 # Jugar a WORDLE
 
