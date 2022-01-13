@@ -46,21 +46,21 @@ showtext_auto()
 
 Así empieza uno de mis libros favoritos, **«Sin noticias de Gurb»**, en el que Eduardo Mendoza nos contaba la **historia de un extraterrestre recién aterrizado en Barcelona**, con el objetivo de encontrar a un compañero perdido. Y es que si tuviéramos que elaborar un método en estas primeras semanas de 2022 para detectar si una persona acaba de llegar del espacio exterior, no habría uno mejor que preguntarle: **«¿has jugado a [WORDLE](https://www.powerlanguage.co.uk/wordle/)?»**
 
-```{r echo = FALSE, out.width = "60%", fig.align = "center", fig.cap = "Wordle, el juego de moda: <https://www.powerlanguage.co.uk/wordle/>"}
-knitr::include_graphics("./wordle.jpg")
+```{r echo = FALSE, out.width = "40%", fig.align = "center", fig.cap = "Wordle, el juego de moda: <https://www.powerlanguage.co.uk/wordle/>"}
+knitr::include_graphics("./img/wordle.jpg")
 ```
 Este sencillo [juego](https://www.powerlanguage.co.uk/wordle/), que imita la dinámica del famoso _Master Mind_, no tiene muchas reglas pero es «adictivo»: **una palabra, 5 letras, y 6 intentos para adivinar** el vocablo mientras la aplicación te indica en cada paso que letras están bien colocadas (o mal colocadas o si directamente no aparecen en la palabra). No solo choca su sencillez sino que además es una **web distinta a las que hoy nos tiene acostumbrados la red**: sin pop-ups, sin anuncios, sin cookies, sin vídeos que se reproducen solos. Nada. Solo un juego, una interfaz sencilla (pero visualmente atractiva) que no reporta ningún beneficio a su creador, el ingenierio de software **Josh Wardle**. Un juego que, aunque ha alcanzado la categoría de fenómeno de masas a finales de 2021 y principios de 2022, **nació además de una historia de amor**, como relata el autor al periodista del New York Times [Daniel Victor](https://twitter.com/bydanielvictor) en esta [entrevista](https://www.nytimes.com/2022/01/03/technology/wordle-word-game-creator.html)<https://www.nytimes.com/2022/01/03/technology/wordle-word-game-creator.html>
 
 Por si alguien llega a esta entrada sin conocer el juego, lo explicamos. El **objetivo consiste en adivinar una palabra de 5 letras**.
 
-```{r echo = FALSE, out.width = "60%", fig.align = "center", fig.cap = "Wordle, el juego de moda: <https://www.powerlanguage.co.uk/wordle/>"}
-knitr::include_graphics("./wordle1.jpg")
+```{r echo = FALSE, out.width = "40%", fig.align = "center", fig.cap = "Wordle, el juego de moda: <https://www.powerlanguage.co.uk/wordle/>"}
+knitr::include_graphics("./img/wordle1.jpg")
 ```
 
 En cada intento el juego nos indica con **amarillo** las letras que están en la palabra (pero mal colocadas), en **verde** las letras que están en la palabra y correctamente colocadas, y en **gris** las letras que no están en la palabra. Con esas pistas, el usuario tiene 6 intentos y solo podrá jugar una palabra al día (quizás esa sea una de las claves de las ganas de seguir jugando).
 
-```{r echo = FALSE, out.width = "60%", fig.align = "center", fig.cap = "Wordle, el juego de moda: <https://www.powerlanguage.co.uk/wordle/>"}
-knitr::include_graphics("./wordle2.jpg")
+```{r echo = FALSE, out.width = "40%", fig.align = "center", fig.cap = "Wordle, el juego de moda: <https://www.powerlanguage.co.uk/wordle/>"}
+knitr::include_graphics("./img/wordle2.jpg")
 ```
 
 Desde unas semanas el juego también cuenta con su versión en castellano, <https://wordle.danielfrg.com/>, adaptado por [Daniel Rodríguez](https://twitter.com/danielfrg), y su versión en catalán, <https://gelozp.com/games/wordle/>, adaptada por [Gerard López](https://twitter.com/gelozp), y no han sido pocos los medios que han dedicado sus espacios a hablar de él.
@@ -121,7 +121,7 @@ Dichos impedimentos hacen **incluso difícil saber el número de palabras totale
 tweet_embed("https://twitter.com/raeinforma/status/1088104147612774403?lang=es")
 ```
 
-Lo que si pone la [RAE](https://www.rae.es/) a nuestra disposición es el [**Corpus de Referencia del Español Actual (CREA)**](https://www.rae.es/banco-de-datos/crea/crea-escrito). El [**CREA**](https://corpus.rae.es/lfrecuencias.html) es un «**conjunto de textos** de diversa procedencia, almacenados en soporte informático, del que es posible extraer información para estudiar las palabras, sus significados y sus contextos». El **corpus de referencia** de la RAE cuenta con **152 560 documentos analizados**, producidos en los países de habla hispana **desde 1975 hasta 2004** (sesgo de selección, parte I), y seleccionados tanto de libros como de periódicos y revistas (sesgo de selección, parte II), y lo tienes en bruto en mi [repositorio](dasda). Para su lectura podemos usar `read_delim()` del paquete `stringr` (cargado en el entorno `{tidyverse}`).
+Lo que si pone la [RAE](https://www.rae.es/) a nuestra disposición es el [**Corpus de Referencia del Español Actual (CREA)**](https://www.rae.es/banco-de-datos/crea/crea-escrito). El [**CREA**](https://corpus.rae.es/lfrecuencias.html) es un «**conjunto de textos** de diversa procedencia, almacenados en soporte informático, del que es posible extraer información para estudiar las palabras, sus significados y sus contextos». El **corpus de referencia** de la RAE cuenta con **152 560 documentos analizados**, producidos en los países de habla hispana **desde 1975 hasta 2004** (sesgo de selección, parte I), y seleccionados tanto de libros como de periódicos y revistas (sesgo de selección, parte II), y lo tienes en bruto en mi [repositorio](https://raw.githubusercontent.com/dadosdelaplace/blog-R-repo/main/wordle/CREA_bruto.txt). Para su lectura podemos usar `read_delim()` del paquete `stringr` (cargado en el entorno `{tidyverse}`).
 
 ```{r eval = FALSE}
 # Corpus de Referencia del Español Actual (CREA)
@@ -132,7 +132,7 @@ datos_brutos_CREA <- # read
 
 ## Preprocesado
 
-Dicho fichero lo he **preprocesado** para hacer más fácil su lectura. El archivo preprocesado lo tienes disponible en [CREA_procesado.csv]() y el código que he ejecutado lo tienes debajo.
+Dicho fichero lo he **preprocesado** para hacer más fácil su lectura. El archivo preprocesado lo tienes disponible en [CREA_procesado.csv](https://raw.githubusercontent.com/dadosdelaplace/blog-R-repo/main/wordle/CREA_procesado.csv) y el código que he ejecutado lo tienes debajo.
 
 <details>
   <summary>📝<strong>Código</strong></summary>
@@ -467,7 +467,7 @@ datatable(datos_CREA_filtrado %>% filter(nletras == 5) %>%
   formatRound(c("frec_norm", "frec_relativa"), digits = 5)
 ```
 
-Las **10 palabras de 5 letras más repetidas en CREA** son: sobre, entre, había, hasta, desde, puede, todos, parte, tiene y donde/dónde. El creador del juego, como hemos mencionado anteriormente, dispone de un repositorio abierto en [Github](https://github.com/danielfrg/wordle.es), conteniendo, entre otros archivos, el listado de las **620 palabras** que ha considerado inicialmente para el juego. Dicho listado está ya descargado en [palabras_wordle.csv](...) **SPOILER**: no mires el archivo si vas a seguir jugando, el objetivo  no es dejar de jugar sino analizar las opciones de ganar.
+Las **10 palabras de 5 letras más repetidas en CREA** son: sobre, entre, había, hasta, desde, puede, todos, parte, tiene y donde/dónde. El creador del juego, como hemos mencionado anteriormente, dispone de un repositorio abierto en [Github](https://github.com/danielfrg/wordle.es), conteniendo, entre otros archivos, el listado de las **620 palabras** que ha considerado inicialmente para el juego. Dicho listado está ya descargado en [palabras_wordle.csv](https://raw.githubusercontent.com/dadosdelaplace/blog-R-repo/main/wordle/palabras_wordle.csv) **SPOILER**: no mires el archivo si vas a seguir jugando, el objetivo  no es dejar de jugar sino analizar las opciones de ganar.
 
 ```{r}
 palabras_wordle <- read_csv(file = "./palabras_wordle.csv")
@@ -1873,7 +1873,7 @@ datos_CREA_frecuentes <- # añadimos todas las de wordle
   rbind(datos_CREA_frecuentes, datos_palabras_wordle) %>%
   distinct(palabra, .keep_all = TRUE)
 
-simulaciones <- 20
+simulaciones <- 2
 generar_equi <- TRUE
 iniciar_equi <- FALSE
 simulacion <- intentos <- distrib_intentos <- list()
