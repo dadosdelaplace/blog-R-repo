@@ -1521,7 +1521,7 @@ Empecemos por el peor de los casos: la **palabra a adivinar puede ser cualquiera
 ```{r simulacion-1}
 # * 6 intentos y 5 letras
 # * con palabra inicial y clave equiprobables
-simulaciones <- 1500
+simulaciones <- 2000
 generar_equi <- TRUE
 iniciar_equi <- FALSE
 set.seed(1234567)
@@ -1626,7 +1626,7 @@ El mejor de los casos será aquel en el que el conjunto de palabras que el usuar
 
 ```{r simulacion-2}
 # solo las candidatas a wordle
-simulaciones <- 1500
+simulaciones <- 2000
 generar_equi <- TRUE
 iniciar_equi <- FALSE
 set.seed(1234567)
@@ -1730,7 +1730,7 @@ Por último el **caso más realista**: el conjunto de palabras que el usuario po
 
 ```{r simulacion-3}
 # adivinando wordle pero con corpus
-simulaciones <- 1500
+simulaciones <- 2000
 generar_equi <- TRUE
 iniciar_equi <- FALSE
 set.seed(1234567)
@@ -1874,11 +1874,12 @@ datos_CREA_frecuentes$matriz_letras <-
   cbind(WORDLE_puntuado$matriz_letras[, idx_WORDLE],
         CREA_puntuado$matriz_letras[, idx_frec])
 
-simulaciones <- 300
+simulaciones <- 400
 generar_equi <- TRUE
 iniciar_equi <- FALSE
 simulacion <- intentos <- distrib_intentos <- list()
-media_intentos <- mediana_intentos <- n_fallos <- rep(0, simulaciones)
+media_intentos <- mediana_intentos <- n_fallos <-
+  rep(0, nrow(datos_CREA_frecuentes$palabras_puntuadas))
 for (i in 1:nrow(datos_CREA_frecuentes$palabras_puntuadas)) {
   
   simulacion[[i]] <-
@@ -1933,7 +1934,7 @@ La idea es hacer en el futuro un simulador visual del juego en `R` pero...to be 
 
 La rama de la estadística o la ciencia de datos que se dedica al análisis de texto se suele conocer como _text mining_ o **minería de textos**, y es una de las ramas más complejas y difíciles (al menos en mi opinión) ya que **perdemos las bondades de los números** y pasamos a trabajar no solo con variables cualitativas (no son variables cuantitativas, no cuantifican ningun valor medible) sino que entra en juego un factor complejo de modelizar: las **reglas del lenguaje**. Al contrario que el famoso Master Mind, donde cada combinación de colores es posible, al trabajar con letras y palabras **no todas las combinaciones son válidas**. Incluso existe toda una rama de la computación, ciencia de datos e inteligencia artficial dedicada a conseguir que un ordenador no solo procese palabras sino que las «entienda», y sea capaz de interactuar con lo escrito (por ejemplo, GPT-3).
 
-La principal limitación de este pequeño análisis es mi **propia ignorancia**: no soy experto en minería de datos ni en **procesamiento natural del lenguaje (NLP)**, más allá de un superficial conocimiento para poder impartir docencia en el máster de minería de datos de la UCM. Así que, obviamente, la metodología tiene un mero objetivo pedagógico y lúdico, siendo ampliamente mejorable.
+La principal limitación de este pequeño análisis es mi **propia ignorancia**: no soy experto en minería de datos ni en **1ºººº2www          procesamiento natural del lenguaje (NLP)**, más allá de un superficial conocimiento para poder impartir docencia en el máster de minería de datos de la UCM. Así que, obviamente, la metodología tiene un mero objetivo pedagógico y lúdico, siendo ampliamente mejorable.
 
 Para aprender de este tipo de herramientas os dejo una **lista de expertas y expertos** que han tratado estos temas por Twitter:
 
