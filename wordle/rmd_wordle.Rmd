@@ -137,7 +137,7 @@ Dicho fichero lo he **preprocesado** para hacer más fácil su lectura. El archi
 <details>
   <summary>📝<strong>Código</strong></summary>
   
-```{r eval = FALSE}
+```{r datos-brutos-CREA, eval = FALSE}
 # Eliminamos columna de orden y separamos última columna en dos
 datos_CREA <-
   datos_brutos_CREA[, -1] %>%
@@ -163,7 +163,7 @@ datos_CREA <-
 
 La carga desde el archivo ya preprocesado puede hacerse con `read_csv()`.
 
-```{r}
+```{r CREA-procesado-csv}
 # Archivo ya preprocesado
 datos_CREA <- read_csv(file = "./CREA_procesado.csv")
 ```
@@ -172,7 +172,7 @@ Tras cargarlo, dado que en el juego en castellano **no se admiten tildes**, pero
 
 <details>
   <summary>📝<strong>Código</strong></summary>
-```{r}
+```{r CREA-tildes}
 # Quitamos tildes pero no queremos eliminar la ñ
 datos_CREA <- datos_CREA %>%
   mutate(palabra =
@@ -224,7 +224,7 @@ Además, he **calculado los siguientes parámetros** de cada una de las palabras
 <details>
   <summary>📝<strong>Código</strong></summary>
 
-```{r}
+```{r stats-CREA}
 datos_CREA <- datos_CREA %>%
   mutate(# frec. relativa
          frec_relativa = frec_abs / sum(frec_abs),
@@ -265,13 +265,15 @@ datos_CREA_filtrado
 
 Tras dicho filtrado, he hecho una **tabla con las 10 000 palabras más repetidas** en frecuencia absoluta, y la **tabla con las 500 palabras menos repetidas** (pero que aparecen en 1 de cada 1000 documentos analizados, o más), por si quieres curiosear algunas de ellas **escribiendo en el buscador**.
  
+<mark>**Palabras más repetidas en CREA (las 15 000 primeras)**</mark>
+
 ```{r echo = FALSE}
 datatable(datos_CREA_filtrado %>%
             arrange(desc(frec_abs)) %>%
             select(c(palabra, frec_abs, frec_relativa,
                      frec_norm,
                      log_frec_abs, log_frec_rel, nletras)) %>%
-            slice_head(n = 10000),
+            slice_head(n = 15000),
           colnames = c("palabras", "frec. absoluta",
                        "frec_relativa",
                        "frec. normalizada", "log-frec",
@@ -280,7 +282,11 @@ datatable(datos_CREA_filtrado %>%
           caption = "Palabras más repetidas en CREA",
           options = list(pageLength = 25))  %>%
   formatRound(c("frec_relativa", "log_frec_abs", "log_frec_rel"), digits = 3)
+```
 
+<mark>**Palabras menos repetidas en CREA**</mark>
+
+```{r echo = FALSE}
 datatable(datos_CREA_filtrado %>%
             arrange(frec_abs) %>%
             select(c(palabra, frec_abs, frec_relativa,
@@ -299,6 +305,8 @@ datatable(datos_CREA_filtrado %>%
 
 Entre todas esas palabras que hemos obtenido quizás sea también relevante **analizar la distribución de las letras**: ¿de qué número de letras son las palabras más repetidas en castellano (según el corpus de la RAE)?
 
+<mark>**Frecuencia de repetición de las palabras según número de letras**</mark>
+
 ```{r echo = FALSE}
 datatable(datos_CREA_filtrado %>%
             group_by(nletras) %>%
@@ -310,7 +318,7 @@ datatable(datos_CREA_filtrado %>%
   formatRound(c("frec_media_abs", "frec_media_norm"), digits = 3)
 ```
 
-¿Y cuántas palabras hay de 3, 5 o 9 letras?
+<mark>**Número de palabras en CREA según número de letras**</mark>
 
 ```{r echo = FALSE}
 datatable(datos_CREA_filtrado %>%
@@ -430,7 +438,7 @@ ggplot(datos_CREA_filtrado,
        title = "WORDLE",
        subtitle =
        paste0("Distribución del nº letras de CREA. Se han eliminado las que\n",
-              "aparecen en menos de 5 de cada 10 000 (152 560 docs analizados)"),
+              "aparecen en menos de 1 de cada 1000 (152 560 docs analizados)"),
        caption =
          paste0("Javier Álvarez Liébana (@dadosdelaplace) | Datos: CREA"))
 
@@ -449,9 +457,12 @@ ggplot(datos_CREA_filtrado,
 
 ## Corpus WORDLE
 
-En los datos anteriores se han incluido **todas las palabras del CREA** que superan cierto número de repeticiones en los documentos (al menos aparecer en 1 de cada 10 000 documentos), y vemos como de **5 letras tan solo contamos con casi 5000 palabras** (daría para jugar 29 años seguidos aproximadamente, aunque recuerda que **NO significa que haya esa cantidad de palabras en la RAE**, simplemente estamos analizando las palabras usadas de un conjunto amplío de textos), que representa aproximadamente el 7% de nuestro corpus.
+En los datos anteriores se han incluido **todas las palabras del CREA** que superan cierto número de repeticiones en los documentos (al menos aparecer en 1 de cada 1000 documentos), y vemos como de **5 letras tan solo contamos con casi 4000 palabras** (daría para jugar 10 años seguidos aproximadamente, aunque recuerda que **NO significa que haya esa cantidad de palabras en la RAE**, simplemente estamos analizando las palabras usadas de un conjunto amplío de textos), que representa aproximadamente el 9% de nuestro corpus.
 
-**¿Qué sucede con el conjunto de 5 letras?** El **juego WORDLE se reduce a palabras de 5 letras**: ¿cuáles son las palabras más repetidas de dicho tamaño? 
+El **juego WORDLE se reduce a palabras de 5 letras**: ¿cuáles son las palabras más repetidas en CREA de dicho tamaño? 
+
+
+<mark>**Frecuencia de repetición en CREA de las palabras de 5 letras**</mark>
 
 
 ```{r echo = FALSE}
@@ -469,32 +480,35 @@ datatable(datos_CREA_filtrado %>% filter(nletras == 5) %>%
 
 Las **10 palabras de 5 letras más repetidas en CREA** son: sobre, entre, había, hasta, desde, puede, todos, parte, tiene y donde/dónde. El creador del juego, como hemos mencionado anteriormente, dispone de un repositorio abierto en [Github](https://github.com/danielfrg/wordle.es), conteniendo, entre otros archivos, el listado de las **620 palabras** que ha considerado inicialmente para el juego. Dicho listado está ya descargado en [palabras_wordle.csv](https://raw.githubusercontent.com/dadosdelaplace/blog-R-repo/main/wordle/palabras_wordle.csv) **SPOILER**: no mires el archivo si vas a seguir jugando, el objetivo  no es dejar de jugar sino analizar las opciones de ganar.
 
-```{r}
+```{r carga-palabras-wordle}
 palabras_wordle <- read_csv(file = "./palabras_wordle.csv")
 palabras_wordle
 ```
 
 Nuestro corpus tiene limitaciones, en particular un **sesgo de selección** ya que analiza textos de un periodo concreto, por lo que palabras más usadas en los últimos años quizás no aparezcan con tanta frecuencia en dichos documentos (como `kefir` o `tesla`), amén de que pueden haber sido incluidas por el autor de la aplicación libremente.
 
-En concreto hay **32 palabras de las 620 que no están en nuestro corpus filtrado**: cotar, jurco, lituo, koala, licra, minal, mimar, boxer, koine, liana, cagon, kefir, rimar, sarza, titar, zebra,  finta, tesla, leñar, kilim, misio, kopek, sarro, lemur, cague, arete, catar, rublo, abano, ostia, arepa.
-
-```{r}
-setdiff(palabras_wordle %>% pull(palabra),
-        datos_CREA_filtrado %>% filter(nletras == 5) %>%
-          pull(palabra))
-```  
-
-Dichas palabras vamos a buscarlas en el corpus original sin eliminar palabras con frecuencias demasiado pequeñas, e incluiremos dichas palabras con sus frecuencias en nuestros corpus filtrado.
+Las **palabras en el WORDLE pero no estén incluidas en el filtro de frecuencia realizado vamos a buscarlas en el corpus original**, e incluiremos dichas palabras con sus frecuencias en nuestros corpus filtrado.
 
 <details>
   <summary>📝<strong>Código</strong></summary>
 
-```{r}
+```{r completar-wordle}
+setdiff(palabras_wordle %>% pull(palabra),
+        datos_CREA_filtrado %>% filter(nletras == 5) %>%
+          pull(palabra))
+
 palabras_ausentes <- 
   setdiff(palabras_wordle %>% pull(palabra),
         datos_CREA_filtrado %>% filter(nletras == 5) %>%
           pull(palabra))
 
+datos_CREA_filtrado <-
+  datos_CREA %>%
+  filter(palabra %in% (palabras_wordle %>% pull(palabra)) | 
+           palabra %in% (datos_CREA_filtrado %>% pull(palabra)))
+```
+
+```{r}
 datos_CREA_filtrado <-
   datos_CREA_filtrado %>%
   add_row(palabra = "cotar", frec_abs = 10,
@@ -507,6 +521,8 @@ datos_CREA_filtrado <-
 </details>
 
 Con las palabras candidatas en WORDLE podemos también generar su **tabla de frecuencias** en los documentos incluidos en el CREA.
+
+<mark>**Frecuencia en CREA de las palabras configuradas para salir en WORLDE**</mark>
 
 ```{r echo = FALSE}
 datos_palabras_wordle <-
@@ -522,7 +538,7 @@ datatable(datos_palabras_wordle %>%
           colnames = c("palabras", "frec. absoluta",
                        "frec. normalizada", "frec.relativa",
                        "log-frec relativa"),
-          options = list(pageLength = 20))  %>%
+          options = list(pageLength = 15))  %>%
   formatRound(c("frec_norm", "frec_relativa",
                 "log_frec_rel"), digits = 5)
 ```
@@ -583,18 +599,24 @@ tokens <- matriz_letras(datos_CREA_filtrado, n = NULL)
 
 </details>
 
-He aquí una **tabla con la frecuencia de cada letra** en los vocablos del CREA. Las **letras más comunes en CREA** son la `a, e, o, i, r`, y las que menos aparecen son la `k, ñ, w`.
+
+<mark>**Frecuencia de las letras en los vocablos de CREA**</mark>
+
+Las **letras más comunes en CREA** son la `a, e, o, i, r`, y las que menos aparecen son la `k, ñ, w`.
 
 ```{r echo = FALSE}
 datatable(tokens$frecuencia_letras %>% arrange(desc(n)) %>%
             mutate(porc = porc / 100),
           caption = "Frecuencia de las letras en los vocablos de CREA",
           colnames = c("letra", "nº veces", "porcentaje (%)"),
-          options = list(pageLength = 30))  %>%
+          options = list(pageLength = 15))  %>%
   formatPercentage(columns = c("porc"), digits = 3)
 ```
 
 ¿Se mantiene esa **distribución de las letras** cuando reducimos el corpus de **CREA a palabras de 5 letras**?
+
+
+<mark>**Frecuencia de las letras en los vocablos de CREA de 5 caracteres**</mark>
 
 ```{r echo = FALSE}
 tokens <-
@@ -610,6 +632,9 @@ datatable(tokens$frecuencia_letras %>% arrange(desc(n)) %>%
 
 Se mantienen las 5 primeras `a, e, o, r, i`, aunque las letras `i,r` se intercambian posicioens. ¿Se mantiene esa **distribución de las letras** en el **conjunto de candidatas de WORDLE**?
 
+
+<mark>**Frecuencia de las letras en los vocablos candidatos en WORDLE**</mark>
+
 ```{r echo = FALSE}
 tokens <- matriz_letras(palabras_wordle, n = NULL)
 datatable(tokens$frecuencia_letras %>% arrange(desc(n)) %>%
@@ -617,7 +642,7 @@ datatable(tokens$frecuencia_letras %>% arrange(desc(n)) %>%
           caption =
             "Frecuencia de las letras en las palabras de WORDLE",
           colnames = c("letra", "nº veces", "porcentaje (%)"),
-          options = list(pageLength = 30))  %>%
+          options = list(pageLength = 15))  %>%
   formatPercentage(columns = c("porc"), digits = 3)
 ```
 
@@ -714,7 +739,11 @@ ggplot(tokens$frecuencia_letras %>%
 
 ## Palabras iniciales y finales
 
-[Elena Álvarez Mellado](https://twitter.com/lirondos), experta en lingüística computacional, apuntaba que quizás una **pista o ayuda para adivinar las palabras** sea analizar qué letras suelen encabezar y terminas las palabras en castellano. El tuit es este <https://twitter.com/lirondos/status/1480875293283954693>
+[Elena Álvarez Mellado](https://twitter.com/lirondos), experta en lingüística computacional, apuntaba que quizás una **pista o ayuda para adivinar las palabras** sea analizar qué letras suelen encabezar y terminas las palabras en castellano. El tuit es este
+
+```{r echo = FALSE}
+tweet_embed("https://twitter.com/lirondos/status/1480875293283954693")
+```
 
 Entre las palabras de CREA, analizaremos todas las letras iniciales y finales de las palabras de las que disponemos, y **calcularemos la proporción de veces en las que sucede**.
 
@@ -1123,22 +1152,29 @@ puntuacion_letras_5 <-
 ```
 </details>
 
+<mark>**Ponderación de las letras basadas en CREA**</mark>
+
+
 ```{r echo = FALSE}
 datatable(puntuacion_letras_global %>%
             arrange(desc(peso_promediado_rel)),
           colnames = c("palabras", "peso promediado",
                        "peso relativo"),
           caption = "Ponderación de letras basadas en CREA",
-          options = list(pageLength = 28))  %>%
+          options = list(pageLength = 10))  %>%
   formatRound(c("peso_promediado", "peso_promediado_rel"),
               digits = 5)
+```
 
+<mark>**Ponderación de las letras basadas en palabras de 5 letras de CREA**</mark>
+
+```{r echo = FALSE}
 datatable(puntuacion_letras_5 %>%
             arrange(desc(peso_promediado_rel)),
           colnames = c("palabras", "peso promediado",
                        "peso relativo"),
           caption = "Ponderación de letras basadas en CREA (solo palabras de 5 letras)",
-          options = list(pageLength = 28)) %>%
+          options = list(pageLength = 10)) %>%
   formatRound(c("peso_promediado", "peso_promediado_rel"),
               digits = 5)
 ``` 
@@ -1151,7 +1187,6 @@ Una vez que **tenemos puntuadas las letras** que van a formar nuestas palabras v
 * **Peso de letras**: puntuaremos cada palabra **sumando las ponderaciones** de cada letra que la forma (al tener todas 5 letras, es irrelevante usar la suma o la media en el orden final).
 
 * **Letras iniciales y finales**: además de las letras en general, la puntuación obtenida en el paso anterior será **ponderada en función de las probabilidades de que su letra inicial/final** sea, efectivamente, letra inicial/final de una palabra, usando las frecuencias relativas que hemos obtenido antes.
-
 
 * **Heterogeneidad**: para medir no solo la «calidad» de las letras sino su **diversidad** (a mayor variedad de letras podemos obtener más información de nuestra palabra a adivinar), la puntuación salida de los pasos anteriores será ponderada por un índice de homogeneidad de variables cualitativas conocido como **Índice de Blau (B)**.
 
@@ -1166,46 +1201,78 @@ donde $k$ es el **número de letras distintas** y $f_i$ es la **proporción de v
   <summary>📝<strong>Código</strong></summary>
 
 ```{r}
+# Letras iniciales/finales
+letras_iniciales <-
+  tibble("letras_iniciales" =
+           map_chr(strsplit(datos_CREA_filtrado %>%
+                              filter(nletras == 5) %>%
+                              pull(palabra), ""),
+                   function(x) { x[1] })) %>%
+  group_by(letras_iniciales) %>% count() %>% ungroup() %>%
+  mutate(porc = 100 * n / sum(n))
+letras_finales <-
+  tibble("letras_finales" =
+           map_chr(strsplit(datos_CREA_filtrado %>%
+                              filter(nletras == 5) %>%
+                              pull(palabra), ""),
+                   function(x) { rev(x)[1] })) %>%
+  group_by(letras_finales) %>% count() %>% ungroup() %>%
+  mutate(porc = 100 * n / sum(n))
+
 # Puntuamos palabras
 puntuar_palabras <-
-  function(palabras, letras_puntuadas, nletras = 5) { 
-  
-  # Matriz letras
-  matriz_letras_corpus <- matriz_letras(palabras, n = nletras)
-  matriz_letras_corpus <- matriz_letras_corpus$matriz_letras
-  
-  # palabras	peso promediado	peso relativo
-  # Puntuar palabras
-  palabras_puntuadas <-
-    palabras %>% 
-    mutate(punt_letras =
-             apply(matriz_letras_corpus, MARGIN = 2,
-                   FUN = function(x) { sum(letras_puntuadas$peso_promediado_rel[
-                     letras_puntuadas$matriz_letras %in% x])
-                   }),
-           ind_blau =
-             apply(matriz_letras_corpus, MARGIN = 2,
-                   FUN = function(x) { 1 - sum((table(x) / sum(table(x)))^2)}),
-           ind_blau_norm = ind_blau / max(ind_blau),
-           punt_letras_total = punt_letras * ind_blau_norm,
-           punt_total_w = punt_letras_total * log_frec_abs)
-  
-  # Output
-  return(list("palabras_puntuadas" = palabras_puntuadas,
-              "matriz_letras" = matriz_letras_corpus))
-  
+  function(palabras, letras_puntuadas, letras_iniciales,
+           letras_finales, nletras = 5) { 
+    
+    # Matriz letras
+    matriz_letras_corpus <- matriz_letras(palabras, n = nletras)
+    matriz_letras_corpus <- matriz_letras_corpus$matriz_letras
+    
+    # palabras	peso promediado	peso relativo
+    # Puntuar palabras
+    palabras_puntuadas <-
+      palabras %>% 
+      mutate(punt_letras =
+               apply(matriz_letras_corpus, MARGIN = 2,
+                     FUN = function(x) { sum(letras_puntuadas$peso_promediado_rel[
+                       letras_puntuadas$matriz_letras %in% x] * 
+                         c((letras_iniciales %>%
+                             filter(letras_iniciales == x[1]) %>%
+                              pull(porc)) / 100, 
+                           1/5, 1/5, 1/5, (letras_finales %>%
+                                       filter(letras_finales ==
+                                                rev(x)[1]) %>%
+                                       pull(porc)) / 100))}),
+             ind_blau =
+               apply(matriz_letras_corpus, MARGIN = 2,
+                     FUN = function(x) { 1 - sum((table(x) / sum(table(x)))^2)}),
+             ind_blau_norm = ind_blau / max(ind_blau),
+             punt_letras_total = punt_letras * ind_blau_norm,
+             punt_total_w = punt_letras_total * log_frec_abs)
+    
+    # Iniciales y finales
+    
+    # Output
+    return(list("palabras_puntuadas" = palabras_puntuadas,
+                "matriz_letras" = matriz_letras_corpus))
+    
   }
-
 CREA_puntuado <-
   puntuar_palabras(datos_CREA_filtrado %>%
                      filter(nletras == 5),
-                   puntuacion_letras_5)
-WORDLE_puntuado <- puntuar_palabras(datos_palabras_wordle,
-                                    puntuacion_letras_5)
+                   puntuacion_letras_5,
+                   letras_iniciales, letras_finales)
+WORDLE_puntuado <-
+  puntuar_palabras(datos_palabras_wordle,
+                   puntuacion_letras_5,
+                   letras_iniciales, letras_finales)
 CREA_puntuado$palabras_puntuadas
 WORDLE_puntuado$palabras_puntuadas
 ```
 </details>
+
+<mark>**Puntuación de palabras del CREA**</mark>
+
 
 ```{r echo = FALSE}
 datatable(CREA_puntuado$palabras_puntuadas %>%
@@ -1216,10 +1283,14 @@ datatable(CREA_puntuado$palabras_puntuadas %>%
                        "puntuacion por letras", "Blau",
                        "puntuación total"),
           caption = "Puntuación de palabras del CREA",
-          options = list(pageLength = 20))  %>%
+          options = list(pageLength = 15))  %>%
   formatRound(c("log_frec_abs", "punt_letras",
                 "ind_blau", "punt_total_w"), digits = 5)
+```
 
+<mark>**Puntuación de palabras candidatas de WORDLE**</mark>
+
+```{r echo = FALSE}
 datatable(WORDLE_puntuado$palabras_puntuadas %>%
             select(c(palabra, frec_abs, log_frec_abs,
                      punt_letras, ind_blau,  punt_total_w)) %>%
@@ -1228,7 +1299,7 @@ datatable(WORDLE_puntuado$palabras_puntuadas %>%
                        "puntuacion por letras", "Blau",
                        "puntuación total"),
           caption = "Puntuación de palabras candidatas de WORDLE",
-          options = list(pageLength = 20))  %>%
+          options = list(pageLength = 10))  %>%
   formatRound(c("log_frec_abs", "punt_letras",
                 "ind_blau", "punt_total_w"), digits = 5)
 ``` 
@@ -1277,26 +1348,34 @@ simular_wordle <-
   function(corpus, matriz_corpus, palabras_candidatas = corpus, 
            intentos = 1, generar_equi = TRUE, iniciar_equi = TRUE,
            dummy_random = FALSE,  inicial_fija = NULL,
+           clave_fija = NULL,
            extremely_dummmy = FALSE) {
     
-    # probabilidades de salir la palabra
-    # * si generar_equi = TRUE --> equiprobables
-    # * si generar_equi = FALSE --> en función de pesos
-    if (generar_equi) {
+    
+    if (is.null(clave_fija)) {
       
-      probs_gen <- rep(1 / nrow(palabras_candidatas),
-                       nrow(palabras_candidatas))
-      
+      # probabilidades de salir la palabra
+      # * si generar_equi = TRUE --> equiprobables
+      # * si generar_equi = FALSE --> en función de pesos
+      if (generar_equi) {
+        
+        probs_gen <- rep(1 / nrow(palabras_candidatas),
+                         nrow(palabras_candidatas))
+        
+      } else {
+        
+        probs_gen <- palabras_candidatas$punt_total_w /
+          sum(palabras_candidatas$punt_total_w)
+        
+      }
+    
+      # Palabra a adivinar
+      clave <- sample(palabras_candidatas$palabra,
+                      size = 1, prob = probs_gen)
     } else {
       
-      probs_gen <- palabras_candidatas$punt_total_w /
-        sum(palabras_candidatas$punt_total_w)
-      
+      clave <- clave_fija
     }
-    
-    # Palabra a adivinar
-    clave <- sample(palabras_candidatas$palabra,
-                    size = 1, prob = probs_gen)
     propiedades_clave <-
       palabras_candidatas %>% filter(palabra == clave)
     
@@ -1308,9 +1387,11 @@ simular_wordle <-
         
       } else {
         
+        # Las 50 mejor puntuadas
         inicial <- corpus %>%
           arrange(desc(punt_total_w)) %>%
-          slice(1) %>% pull(palabra)
+          slice(30) %>% pull(palabra)
+        inicial <- sample(inicial, size = 1)
         
       }
     } else {
@@ -1396,18 +1477,18 @@ simular_wordle <-
   }
 
 simulacion_wordle <-
-  function(corpus, puntuacion_letras,
-           palabras_candidatas = corpus,
+  function(corpus_puntuado,
+           palabras_candidatas = corpus_puntuado,
            simulaciones = 1e3, nintentos = 6,
            generar_equi = TRUE, iniciar_equi = TRUE,
            dummy_random = FALSE, inicial_fija = NULL,
+           clave_fija = NULL,
            extremely_dummmy = FALSE) {
     
     # Puntuamos palabras
-    puntuacion <- 
-      puntuar_palabras(corpus, puntuacion_letras)
-    corpus_wordle_puntuado <- puntuacion$palabras_puntuadas
-    matriz_letras_wordle <- puntuacion$matriz_letras
+    corpus_wordle_puntuado <- corpus_puntuado$palabras_puntuadas
+    matriz_letras_wordle <- corpus_puntuado$matriz_letras
+    palabras_candidatas <- palabras_candidatas$palabras_puntuadas
   
     # Simulación
     resultados <- 
@@ -1420,6 +1501,7 @@ simulacion_wordle <-
                                iniciar_equi = iniciar_equi,
                                dummy_random = dummy_random,
                                inicial_fija = inicial_fija,
+                               clave_fija = clave_fija,
                                extremely_dummmy = extremely_dummmy))
     # Output
     return(list("corpus_wordle" = corpus_wordle_puntuado,
@@ -1439,13 +1521,12 @@ Empecemos por el peor de los casos: la **palabra a adivinar puede ser cualquiera
 ```{r simulacion-1}
 # * 6 intentos y 5 letras
 # * con palabra inicial y clave equiprobables
-simulaciones <- 25
+simulaciones <- 50
 generar_equi <- TRUE
 iniciar_equi <- FALSE
+set.seed(1234567)
 simulacion_CREA <-
-  simulacion_wordle(datos_CREA_filtrado %>%
-                     filter(nletras == 5),
-                    puntuacion_letras_5,
+  simulacion_wordle(CREA_puntuado,
                     simulaciones = simulaciones,
                     generar_equi = generar_equi,
                     iniciar_equi = iniciar_equi,
@@ -1461,9 +1542,7 @@ media_intentos_CREA
 generar_equi <- TRUE
 iniciar_equi <- TRUE
 simulacion_dummy <-
-  simulacion_wordle(datos_CREA_filtrado %>%
-                     filter(nletras == 5),
-                    puntuacion_letras_5,
+  simulacion_wordle(CREA_puntuado,
                     simulaciones = simulaciones,
                     generar_equi = generar_equi,
                     iniciar_equi = iniciar_equi,
@@ -1523,7 +1602,7 @@ datatable(df,
 
 En este caso extremo en el que nuestras **palabras candidatas podrían ser** los `r nrow(datos_CREA_filtrado %>% filter(nletras == 5))` **vocablos de CREA** de 5 letras, conseguimos **ganar en 6 intentos** o menos el `r round(100 - 100 * (df %>% filter(intentos == "FALLO") %>% pull(frecuencia)), 2)`% de las veces, con una media de `r round(media_intentos_CREA, 2)` intentos para resolverlo y una mediana de `r round(median(intentos_CREA), 2)` (el 50% de las veces lo resuelve en dichos intentos o menos). En el caso de **decidir las palabras aleatoriamente (entre las candidatas en cada paso)**, obtendríamos una media de `r round(media_intentos_dummy, 2)` y una mediana de `r round(median(intentos_dummy), 2)`, consiguiendo resolverlo  el `r round(100 - 100 * (df %>% filter(intentos == "FALLO") %>% pull(frecuencia_aleat)), 2)`% de las veces.
 
-```{r grafica-1}
+```{r grafica-1, echo = FALSE}
 # gráfica
 ggplot(df %>% mutate(fallo = (intentos == "FALLO"))) + 
   geom_col(aes(x = intentos, y = frecuencia, fill = fallo),
@@ -1547,12 +1626,12 @@ El mejor de los casos será aquel en el que el conjunto de palabras que el usuar
 
 ```{r simulacion-2}
 # solo las candidatas a wordle
-simulaciones <- 25
+simulaciones <- 50
 generar_equi <- TRUE
 iniciar_equi <- FALSE
+set.seed(1234567)
 simulacion_WORDLE <-
-  simulacion_wordle(datos_palabras_wordle,
-                    puntuacion_letras_5,
+  simulacion_wordle(WORDLE_puntuado,
                     simulaciones = simulaciones,
                     generar_equi = generar_equi,
                     iniciar_equi = iniciar_equi)
@@ -1566,8 +1645,7 @@ media_intentos_WORDLE
 generar_equi <- TRUE
 iniciar_equi <- TRUE
 simulacion_dummy_WORDLE <-
-  simulacion_wordle(datos_palabras_wordle,
-                    puntuacion_letras_5,
+  simulacion_wordle(WORDLE_puntuado,
                     simulaciones = simulaciones,
                     generar_equi = generar_equi,
                     iniciar_equi = iniciar_equi,
@@ -1629,7 +1707,7 @@ datatable(df_WORDLE,
 En este caso conseguimos **ganar en 6 intentos** o menos el `r round(100 - 100 * (df_WORDLE %>% filter(intentos == "FALLO") %>% pull(frecuencia)), 2)`% de las veces, con una media de `r round(media_intentos_WORDLE, 2)` intentos para resolverlo y una mediana de `r round(median(intentos_WORDLE), 2)` (el 50% de las veces lo resuelve en dichos intentos o menos). En el caso de **decidir las palabras aleatoriamente (entre las candidatas en cada paso)**, obtendríamos una media de `r round(media_intentos_dummy_WORDLE, 2)` y una mediana de `r round(median(intentos_dummy_WORDLE), 2)` (el 50% de las veces lo resuelve en dichos intentos o menos)., consiguiendo resolverlo el `r round(100 - 100 * (df_WORDLE %>% filter(intentos == "FALLO") %>% pull(frecuencia_aleat)), 2)`% de las veces.
 
 
-```{r grafica-2}
+```{r grafica-2, echo = FALSE}
 # gráfica
 ggplot(df_WORDLE %>% mutate(fallo = (intentos == "FALLO"))) + 
   geom_col(aes(x = intentos, y = frecuencia, fill = fallo),
@@ -1652,14 +1730,13 @@ Por último el **caso más realista**: el conjunto de palabras que el usuario po
 
 ```{r simulacion-3}
 # adivinando wordle pero con corpus
-simulaciones <- 25
+simulaciones <- 50
 generar_equi <- TRUE
 iniciar_equi <- FALSE
+set.seed(1234567)
 simulacion_mixta <-
-  simulacion_wordle(datos_CREA_filtrado %>%
-                     filter(nletras == 5),
-                    puntuacion_letras_5,
-                    palabras_candidatas = datos_palabras_wordle,
+  simulacion_wordle(CREA_puntuado,
+                    palabras_candidatas = WORDLE_puntuado,
                     simulaciones = simulaciones,
                     generar_equi = generar_equi,
                     iniciar_equi = iniciar_equi)
@@ -1674,10 +1751,8 @@ media_intentos_mixta
 generar_equi <- TRUE
 iniciar_equi <- TRUE
 simulacion_dummy_mixta <-
-  simulacion_wordle(datos_CREA_filtrado %>%
-                     filter(nletras == 5),
-                    puntuacion_letras_5,
-                    palabras_candidatas = datos_palabras_wordle,
+  simulacion_wordle(CREA_puntuado,
+                    palabras_candidatas = WORDLE_puntuado,
                     simulaciones = simulaciones,
                     generar_equi = generar_equi,
                     iniciar_equi = iniciar_equi,
@@ -1738,13 +1813,13 @@ datatable(df_mixta,
 
 En este caso conseguimos **ganar en 6 intentos** o menos el `r round(100 - 100 * (df_mixta %>% filter(intentos == "FALLO") %>% pull(frecuencia)), 2)`% de las veces, con una media de `r round(media_intentos_mixta, 2)` intentos para resolverlo y una mediana de `r round(median(intentos_mixta), 2)` (el 50% de las veces lo resuelve en dichos intentos o menos). En el caso de **decidir las palabras aleatoriamente (entre las candidatas en cada paso)**, obtendríamos una media de `r round(media_intentos_dummy_mixta, 2)` y una mediana de `r round(median(intentos_dummy_mixta), 2)` (el 50% de las veces lo resuelve en dichos intentos o menos), consiguiendo resolverlo el `r round(100 - 100 * (df_mixta %>% filter(intentos == "FALLO") %>% pull(frecuencia_aleat)), 2)`% de las veces.
 
-<details>
-  <summary>📝<strong>Código</strong></summary>
-
-```{r grafica-3}
+```{r grafica-3, echo = FALSE}
 palabras_iniciales <- 
   unlist(simulacion_mixta$resultados["inicial", ])
-palabras_fallo <- palabras_iniciales[intentos_mixta == 7]
+palabras_clave <- 
+  unlist(simulacion_mixta$resultados["palabra_clave", ])
+palabras_iniciales_fallo <- palabras_iniciales[intentos_mixta == 7]
+palabras_clave_fallo <- palabras_clave[intentos_mixta == 7]
 
 # gráfica
 ggplot(df_mixta %>% mutate(fallo = (intentos == "FALLO"))) + 
@@ -1760,93 +1835,55 @@ ggplot(df_mixta %>% mutate(fallo = (intentos == "FALLO"))) +
        caption =
          paste0("Javier Álvarez Liébana (@dadosdelaplace).\nDatos: CREA y Github danielfrg/wordle.es"))
 ```
-</details>
 
 
-&nsbp;
 
-Las **palabras a adivinar en los casos en los que no se puedo completar** en 6 menos eran
+&nbsp;
 
-`r if (length(palabras_fallo) == 0) { "ninguna" } else { palabras_fallo })`
+Las **palabras a adivinar en los casos en los que no se puedo completar** en 6 menos eran:
 
+`r if (length(palabras_clave_fallo) == 0) { "ninguna" } else { unique(palabras_clave_fallo) }`
+
+Las **palabras iniciales** eran:
+
+`r if (length(palabras_iniciales_fallo) == 0) { "ninguna" } else { unique(palabras_iniciales_fallo) }`
 
 **IMPORTANTE**: los resultados de elegir una palabra aleatoria tienen truco, ya que no es totalmente aleatorio, sino que estamos cribando palabras en función de los resultados de la iteración anterior. Si la palabra fuese totalmente aleatorio, sin atender a los resultados de los cuadrados, el resultado sería bastante desastrosos, pero asumimos que en el peor de los casos, la estrategia mínima de un usuario será, al menos, cuadrar una palabra en función de sus cuadrados anteriores. 
 
 
-```{r tabla-4, echo = FALSE}
-caption_tabla <-
-  glue("Resultados con candidatas de CREA pero clave de WORDLE ({simulaciones} simulaciones)")
-tabla_intentos_mixta <- 
-  tibble("intentos" = sort(unique(intentos_mixta)),
-         "veces" = table(intentos_mixta),
-         "frecuencia" = distrib_intentos_mixta /
-           sum(distrib_intentos_mixta))
-tabla_intentos_muy_dummy_mixta <- 
-  tibble("intentos" = sort(unique(intentos_muy_dummy_mixta)),
-         "veces_aleat" = table(intentos_muy_dummy_mixta),
-         "frecuencia_aleat" = distrib_intentos_muy_dummy_mixta /
-           sum(distrib_intentos_muy_dummy_mixta))
-intentos_conjunto_mixta2 <- left_join(tibble("intentos" = 1:7),
-                               tabla_intentos_mixta, by = "intentos")
-intentos_conjunto_mixta2 <-
-  left_join(intentos_conjunto_mixta2, tabla_intentos_muy_dummy_mixta,
-            by = "intentos") %>% 
-  mutate(across(everything(), ~replace_na(.x, 0)))
-
-df_mixta2 <- # tabla resultados
-  intentos_conjunto_mixta2 %>%
-  mutate(intentos = ifelse(intentos == 7, "FALLO",
-                           as.character(intentos)))
-
-datatable(df_mixta2,
-          rownames = FALSE,
-          colnames = c("intentos", "veces", "frecuencia (%)",
-                       "veces (aleatorio)",
-                       "frecuencia aleatoria (%)"),
-          caption = caption_tabla) %>%
-  formatPercentage(c("frecuencia", "frecuencia_aleat"),
-                   digits = 2) %>%
-  formatStyle(names(df_mixta2[, c(2, 4)]),
-              background =
-                styleColorBar(range(df_mixta2[, c(2, 4)]), "#c9b458"),
-              backgroundSize = '98% 88%',
-              backgroundRepeat = 'no-repeat',
-              backgroundPosition = 'center') %>%
-  formatStyle("intentos",
-              target = 'row',
-              backgroundColor = styleEqual(c("FALLO"), c("#F2D1D1")))
-```
-
 ## Elección de la palabra inicial
 
-Por último vamos a realizar una busqueda de las **palabras que mejor funcionan como palabra inicial**. Para ello vamos a considerar las **palabras del CREA más repetidas** (que aparezcan en más de 60 de cada 1000 documentos) y añadirle las palabras que sabemos que pueden ser candidatas en WORDLE (y no estuviera). Para cada una vamos a generar un **número de simulaciones y contabilizar el número de éxitos o fracasos**.
+Por último vamos a realizar una busqueda de las **palabras que mejor funcionan como palabra inicial**. Para ello vamos a considerar las **palabras del CREA más repetidas** (que aparezcan en más de 50 de cada 1000 documentos). Para cada una vamos a generar un **número de simulaciones y contabilizar el número de éxitos o fracasos**.
 
 <details>
   <summary>📝<strong>Código</strong></summary>
 
-```{r}
-datos_CREA_frecuentes <-
-  datos_CREA_filtrado %>% filter(frec_norm > 60 & nletras == 5)
-datos_CREA_frecuentes <- # añadimos todas las de wordle
-  rbind(datos_CREA_frecuentes, datos_palabras_wordle) %>%
-  distinct(palabra, .keep_all = TRUE)
+```{r eleccion-palabra-inicial}
+idx_frec <-
+  which(CREA_puntuado$palabras_puntuadas$frec_norm > 50 &
+          CREA_puntuado$palabras_puntuadas$nletras == 5)
+datos_CREA_frecuentes <- CREA_puntuado
+datos_CREA_frecuentes$palabras_puntuadas <-
+  datos_CREA_frecuentes$palabras_puntuadas[idx_frec, ]
+datos_CREA_frecuentes$matriz_letras <-
+  datos_CREA_frecuentes$matriz_letras[, idx_frec]
 
-simulaciones <- 2
+simulaciones <- 20
 generar_equi <- TRUE
 iniciar_equi <- FALSE
 simulacion <- intentos <- distrib_intentos <- list()
 media_intentos <- mediana_intentos <- n_fallos <- rep(0, simulaciones)
-for (i in 1:nrow(datos_CREA_frecuentes)) {
+for (i in 1:nrow(datos_CREA_frecuentes$palabras_puntuadas)) {
   
   simulacion[[i]] <-
       simulacion_wordle(datos_CREA_frecuentes,
-                        puntuacion_letras_5,
-                        palabras_candidatas = datos_palabras_wordle,
+                        palabras_candidatas = WORDLE_puntuado,
                         simulaciones = simulaciones,
                         generar_equi = generar_equi,
                         iniciar_equi = iniciar_equi,
-                        inicial_fija = datos_CREA_frecuentes$palabra[i],
+                        inicial_fija = datos_CREA_frecuentes$palabras_puntuadas$palabra[i],
                         dummy_random = FALSE)
+  
     intentos[[i]] <-
       unlist(simulacion[[i]]$resultados["intentos", ])
     distrib_intentos[[i]] <- 100 * table(intentos[[i]]) / simulaciones
@@ -1858,7 +1895,7 @@ for (i in 1:nrow(datos_CREA_frecuentes)) {
 </details>
 
 ```{r echo = FALSE}
-df <- tibble("palabra" = datos_CREA_frecuentes$palabra,
+df <- tibble("palabra" = datos_CREA_frecuentes$palabras_puntuadas$palabra,
              "media" = round(media_intentos, 3),
              "mediana" = round(mediana_intentos, 3),
              "fallos" = n_fallos / simulaciones)
@@ -1869,11 +1906,13 @@ datatable(df, rownames = FALSE, caption = caption_tabla,
           colnames = c("palabra", "media", "mediana",
                        "fallos (%)")) %>%
   formatPercentage(c("fallos"), digits = 3)
+
+
 ```
 
-Las palabras con mejor «rendimiento» han sido
-
+Las palabras iniciales con mejor «rendimiento» han sido
 `r df %>% arrange(media) %>% slice_head(n = 7) %>% pull(palabra)`.
+
 
 # Jugar a WORDLE
 
