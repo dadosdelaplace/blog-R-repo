@@ -265,7 +265,7 @@ datos_CREA_filtrado
 
 Tras dicho filtrado, he hecho una **tabla con las 10 000 palabras más repetidas** en frecuencia absoluta, y la **tabla con las 500 palabras menos repetidas** (pero que aparecen en 1 de cada 1000 documentos analizados, o más), por si quieres curiosear algunas de ellas **escribiendo en el buscador**.
  
-<mark>**Palabras más repetidas en CREA (las 15 000 primeras)**</mark>
+<mark>**Palabras más repetidas en CREA (las 12 000 primeras)**</mark>
 
 ```{r echo = FALSE}
 datatable(datos_CREA_filtrado %>%
@@ -273,7 +273,7 @@ datatable(datos_CREA_filtrado %>%
             select(c(palabra, frec_abs, frec_relativa,
                      frec_norm,
                      log_frec_abs, log_frec_rel, nletras)) %>%
-            slice_head(n = 15000),
+            slice_head(n = 12000),
           colnames = c("palabras", "frec. absoluta",
                        "frec_relativa",
                        "frec. normalizada", "log-frec",
@@ -1521,7 +1521,7 @@ Empecemos por el peor de los casos: la **palabra a adivinar puede ser cualquiera
 ```{r simulacion-1}
 # * 6 intentos y 5 letras
 # * con palabra inicial y clave equiprobables
-simulaciones <- 50
+simulaciones <- 1500
 generar_equi <- TRUE
 iniciar_equi <- FALSE
 set.seed(1234567)
@@ -1626,7 +1626,7 @@ El mejor de los casos será aquel en el que el conjunto de palabras que el usuar
 
 ```{r simulacion-2}
 # solo las candidatas a wordle
-simulaciones <- 50
+simulaciones <- 1500
 generar_equi <- TRUE
 iniciar_equi <- FALSE
 set.seed(1234567)
@@ -1730,7 +1730,7 @@ Por último el **caso más realista**: el conjunto de palabras que el usuario po
 
 ```{r simulacion-3}
 # adivinando wordle pero con corpus
-simulaciones <- 50
+simulaciones <- 1500
 generar_equi <- TRUE
 iniciar_equi <- FALSE
 set.seed(1234567)
@@ -1853,22 +1853,28 @@ Las **palabras iniciales** eran:
 
 ## Elección de la palabra inicial
 
-Por último vamos a realizar una busqueda de las **palabras que mejor funcionan como palabra inicial**. Para ello vamos a considerar las **palabras del CREA más repetidas** (que aparezcan en más de 50 de cada 1000 documentos). Para cada una vamos a generar un **número de simulaciones y contabilizar el número de éxitos o fracasos**.
+Por último vamos a realizar una busqueda de las **palabras que mejor funcionan como palabra inicial**. Para ello vamos a considerar las **palabras del CREA más repetidas** (que aparezcan en más de 220 de cada 1000 documentos) amén de las palabras de WORDLE (filtrando las que se repitan en menos de 20 de cada 1000 documentos). Para cada una vamos a generar un **número de simulaciones y contabilizar el número de éxitos o fracasos**.
 
 <details>
   <summary>📝<strong>Código</strong></summary>
 
 ```{r eleccion-palabra-inicial}
-idx_frec <-
-  which(CREA_puntuado$palabras_puntuadas$frec_norm > 50 &
-          CREA_puntuado$palabras_puntuadas$nletras == 5)
-datos_CREA_frecuentes <- CREA_puntuado
-datos_CREA_frecuentes$palabras_puntuadas <-
-  datos_CREA_frecuentes$palabras_puntuadas[idx_frec, ]
-datos_CREA_frecuentes$matriz_letras <-
-  datos_CREA_frecuentes$matriz_letras[, idx_frec]
+idx_WORDLE <-
+  which(WORDLE_puntuado$palabras_puntuadas$frec_norm > 20)
+idx_frec <- which(CREA_puntuado$palabras_puntuadas$frec_norm > 220 &
+               CREA_puntuado$palabras_puntuadas$nletras == 5 &
+               !(CREA_puntuado$palabras_puntuadas$palabra %in%
+                   WORDLE_puntuado$palabras_puntuadas$palabra))
 
-simulaciones <- 20
+datos_CREA_frecuentes <- WORDLE_puntuado
+datos_CREA_frecuentes$palabras_puntuadas <-
+  rbind(WORDLE_puntuado$palabras_puntuadas[idx_WORDLE, ],
+        CREA_puntuado$palabras_puntuadas[idx_frec, ])
+datos_CREA_frecuentes$matriz_letras <-
+  cbind(WORDLE_puntuado$matriz_letras[, idx_WORDLE],
+        CREA_puntuado$matriz_letras[, idx_frec])
+
+simulaciones <- 300
 generar_equi <- TRUE
 iniciar_equi <- FALSE
 simulacion <- intentos <- distrib_intentos <- list()
@@ -1910,13 +1916,16 @@ datatable(df, rownames = FALSE, caption = caption_tabla,
 
 ```
 
-Las palabras iniciales con mejor «rendimiento» han sido
+Las **palabras iniciales con mejor «rendimiento»** han sido:
+
 `r df %>% arrange(media) %>% slice_head(n = 7) %>% pull(palabra)`.
 
 
 # Jugar a WORDLE
 
-La idea es hacer en el futuro un simulador del juego en `R` pero...to be continued. Tenéis un simulador en `R` para el juego en inglés en <https://github.com/coolbutuseless/wordle>
+Puedes simular el juego con el código en <https://github.com/dadosdelaplace/blog-R-repo/blob/main/wordle/codigoR.R>, con el que podrás introducir los aciertos que te devuelva la web, y la función te propondrá palabras candidatas a introducir.
+
+La idea es hacer en el futuro un simulador visual del juego en `R` pero...to be continued. Aunque puedes simular el juego Tenéis un simulador en `R` para el juego en inglés en <https://github.com/coolbutuseless/wordle>
 
 # 🛑 Limitaciones
 
