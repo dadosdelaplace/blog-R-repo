@@ -1464,7 +1464,9 @@ simular_wordle <-
       } 
     }
     
-    intentos <- ifelse(nrow(candidatas) == 1, i, intentos + 1)
+    intentos <- ifelse(nrow(candidatas) == 1,
+                       ifelse(palabra_0 == clave, i + 1,
+                              intentos + 1), intentos + 1)
     
     # Output
     return(list("palabra_clave" = clave, "inicial" = inicial,
@@ -1860,8 +1862,8 @@ Por último vamos a realizar una busqueda de las **palabras que mejor funcionan 
 
 ```{r eleccion-palabra-inicial}
 idx_WORDLE <-
-  which(WORDLE_puntuado$palabras_puntuadas$frec_norm > 20)
-idx_frec <- which(CREA_puntuado$palabras_puntuadas$frec_norm > 220 &
+  which(WORDLE_puntuado$palabras_puntuadas$frec_norm > 5)
+idx_frec <- which(CREA_puntuado$palabras_puntuadas$frec_norm > 200 &
                CREA_puntuado$palabras_puntuadas$nletras == 5 &
                !(CREA_puntuado$palabras_puntuadas$palabra %in%
                    WORDLE_puntuado$palabras_puntuadas$palabra))
@@ -1874,7 +1876,7 @@ datos_CREA_frecuentes$matriz_letras <-
   cbind(WORDLE_puntuado$matriz_letras[, idx_WORDLE],
         CREA_puntuado$matriz_letras[, idx_frec])
 
-simulaciones <- 400
+simulaciones <- 500
 generar_equi <- TRUE
 iniciar_equi <- FALSE
 simulacion <- intentos <- distrib_intentos <- list()
